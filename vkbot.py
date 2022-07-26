@@ -83,17 +83,17 @@ def main():
     keyboard.add_line()
     keyboard.add_button('Мой счёт', color=VkKeyboardColor.SECONDARY)
 
-    game_started = False
+    users_in_game = []
     for event in longpoll.listen():
         if event.type == VkBotEventType.MESSAGE_NEW:
             message_text = event.obj['message']['text']
             if message_text == 'Новый вопрос':
                 handle_new_question_request(event, vk_session_api, questions,
                                             redis_handler)
-                game_started = True
+                users_in_game.append(event.obj['message']['from_id'])
             elif message_text == 'Сдаться':
                 give_up(event, vk_session_api, questions, redis_handler)
-            elif game_started:
+            elif event.obj['message']['from_id'] in users_in_game:
                 handle_solution_attempt(event, vk_session_api, questions,
                                         redis_handler, keyboard)
             else:
