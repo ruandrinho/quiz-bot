@@ -74,10 +74,10 @@ def main():
     )
 
     redis_handler = redis.Redis(
-        host='redis-17040.c293.eu-central-1-1.ec2.cloud.redislabs.com',
-        port=17040,
-        username='default',
-        password='Vu2FxbRBS359ZllgukdN8QL9mW6S5KpD',
+        host=os.getenv('REDIS_HOST'),
+        port=os.getenv('REDIS_PORT'),
+        username=os.getenv('REDIS_USERNAMET'),
+        password=os.getenv('REDIS_PASSWORD'),
         decode_responses=True
     )
 

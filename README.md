@@ -8,11 +8,17 @@
 
 Клонируйте репозиторий или скачайте архив и распакуйте.
 
+Создайте телеграм-бота, группу VK и базу данных Redis.
+
 Создайте файл окружения `.env` и заполните необходимым данными:
 ```
 TELEGRAM_BOT_TOKEN=
 VK_GROUP_ID=
 VK_TOKEN=
+REDIS_HOST=
+REDIS_PORT=
+REDIS_USERNAME=
+REDIS_PASSWORD=
 QUESTIONS_FOLDER=questions
 ```
 
