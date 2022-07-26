@@ -71,7 +71,7 @@ def main():
         decode_responses=True
     )
 
-    questions = get_questions()
+    questions = get_questions(os.getenv('QUESTIONS_FOLDER'))
 
     vk_session = vk_api.VkApi(token=os.getenv('VK_TOKEN'))
     vk_session_api = vk_session.get_api()

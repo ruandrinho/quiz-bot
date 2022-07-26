@@ -1,6 +1,12 @@
-def get_questions():
-    with open('mkm17.txt', 'r', encoding='KOI8-R') as file:
-        quiz = file.read()
+from os import walk
+
+
+def get_questions(folder):
+    _, _, filenames = next(walk(folder), (None, None, []))
+    quiz = ''
+    for filename in filenames:
+        with open(f'{folder}/{filename}', 'r', encoding='KOI8-R') as file:
+            quiz += file.read()
 
     question = answer = ''
     questions = {}

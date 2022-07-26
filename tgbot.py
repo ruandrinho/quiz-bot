@@ -81,7 +81,7 @@ def main():
         decode_responses=True
     )
 
-    questions = get_questions()
+    questions = get_questions(os.getenv('QUESTIONS_FOLDER'))
 
     token = os.getenv('TELEGRAM_TOKEN')
     application = Application.builder().token(token).build()

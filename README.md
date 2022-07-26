@@ -13,6 +13,7 @@
 TELEGRAM_BOT_TOKEN=
 VK_GROUP_ID=
 VK_TOKEN=
+QUESTIONS_FOLDER=questions
 ```
 
 Python3 должен быть уже установлен. 
