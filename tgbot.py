@@ -25,47 +25,60 @@ async def reply(update: Update, text, keyboard=False):
     await update.message.reply_text(text, reply_markup=reply_markup)
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await reply(update, 'Привет. Я хочу сыграть с тобой в игру!',
-                keyboard=True)
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE,
+                reply_markup=None):
+    await update.message.reply_text(
+        'Привет. Я хочу сыграть с тобой в игру!',
+        reply_markup=reply_markup
+    )
     return NEW_QUESTION
 
 
 async def handle_new_question_request(update: Update,
                                       context: ContextTypes.DEFAULT_TYPE,
-                                      questions: dict, redis_handler):
+                                      questions: dict, redis_handler,
+                                      reply_markup=None):
     user = update.message.from_user
     question, answer = choice(list(questions.items()))
     redis_handler.set(user.id, question)
-    await reply(update, question)
+    await update.message.reply_text(question, reply_markup=reply_markup)
     return ANSWER
 
 
 async def handle_solution_attempt(update: Update,
                                   context: ContextTypes.DEFAULT_TYPE,
-                                  questions: dict, redis_handler):
+                                  questions: dict, redis_handler,
+                                  reply_markup=None):
     user = update.message.from_user
     question = redis_handler.get(user.id)
     answer = questions[question]
     if update.message.text.strip().lower() == answer.lower():
-        await reply(update, 'Поздравляю! Для продолжения нажми «Новый вопрос»',
-                    keyboard=True)
+        await update.message.reply_text(
+            'Поздравляю! Для продолжения нажми «Новый вопрос»',
+            reply_markup=reply_markup
+        )
         return NEW_QUESTION
     else:
-        await reply(update, 'Неправильно. Попробуешь ещё раз?', keyboard=True)
+        await update.message.reply_text(
+            'Неправильно. Попробуешь ещё раз?',
+            reply_markup=reply_markup
+        )
         return ANSWER
 
 
 async def give_up(update: Update, context: ContextTypes.DEFAULT_TYPE,
-                  questions: dict, redis_handler):
+                  questions: dict, redis_handler, reply_markup=None):
     user = update.message.from_user
     question = redis_handler.get(user.id)
     answer = questions[question]
-    await reply(update, f'Правильный ответ: {answer}')
+    await update.message.reply_text(
+        f'Правильный ответ: {answer}',
+        reply_markup=reply_markup
+    )
 
     question, answer = choice(list(questions.items()))
     redis_handler.set(user.id, question)
-    await reply(update, question)
+    await update.message.reply_text(question, reply_markup=reply_markup)
     return ANSWER
 
 
@@ -90,8 +103,19 @@ def main():
     token = os.getenv('TELEGRAM_TOKEN')
     application = Application.builder().token(token).build()
 
+    reply_markup = ReplyKeyboardMarkup(
+        REPLY_KEYBOARD,
+        one_time_keyboard=True
+    )
+
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
+        entry_points=[CommandHandler(
+            'start',
+            partial(
+                start,
+                reply_markup=reply_markup
+            )
+        )],
         states={
             NEW_QUESTION: [MessageHandler(
                 filters.Regex('^(Новый вопрос)$'),
@@ -107,7 +131,8 @@ def main():
                 partial(
                     handle_solution_attempt,
                     questions=questions,
-                    redis_handler=redis_handler
+                    redis_handler=redis_handler,
+                    reply_markup=reply_markup
                 )
             )]
         },
