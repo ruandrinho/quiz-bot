@@ -16,8 +16,12 @@ REPLY_KEYBOARD = [['Новый вопрос', 'Сдаться'], ['Мой счё
 
 
 async def reply(update: Update, text, keyboard=False):
-    reply_markup = ReplyKeyboardMarkup(REPLY_KEYBOARD, one_time_keyboard=True)\
-        if keyboard else None
+    reply_markup = None
+    if keyboard:
+        reply_markup = ReplyKeyboardMarkup(
+            REPLY_KEYBOARD,
+            one_time_keyboard=True
+        )
     await update.message.reply_text(text, reply_markup=reply_markup)
 
 
